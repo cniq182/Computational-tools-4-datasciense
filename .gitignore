@@ -1,0 +1,17 @@
+# Dataset (too large for GitHub and not redistributable under Yelp's ToS)
+data/
+*.tar
+*.tar.gz
+*.zip
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# OS
+.DS_Store
+__MACOSX/
+Thumbs.db
