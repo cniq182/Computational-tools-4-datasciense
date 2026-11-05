@@ -57,14 +57,21 @@ The `data/` folder is listed in `.gitignore`, so it will never be committed.
    - Build a taste-similarity graph from those pairs and apply Louvain.
    - (Optional) Compare with k-means on per-category rating vectors.
 
-4. **Comparison**
+4. **Frequent itemsets & association rules (PCY vs. A-priori)**
+   - Treat each user as a basket of the categories (or businesses) they rated positively.
+   - Mine frequent itemsets with both A-priori and PCY.
+   - Compare the two algorithms: runtime, memory use, and number of candidate pairs.
+   - Extract association rules for each friend community and each taste community.
+   - Compare rules across communities: do friend communities share the same rules as taste communities?
+
+5. **Comparison**
    - Measure overlap between friend and taste partitions with NMI and ARI.
    - Permutation test: check whether friends share tastes more than random user pairs.
 
-5. **Evaluation & conclusions**
+6. **Evaluation & conclusions**
    - Report whether friend communities are also taste communities.
    - Compare LSH parameters and community detection methods (Louvain vs. spectral).
    - Discuss limitations (e.g., correlation vs. causation, data sparsity).
-
+   
 ## Scope of the project
 We are aiming to know if _friend communities_ are also _taste communities_
