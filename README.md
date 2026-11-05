@@ -30,7 +30,11 @@ The `data/` folder is listed in `.gitignore`, so it will never be committed.
 ## Steps
 
 1-Data: loading, cleaning, filtering, exploration; owns the notebook.
+
 2-LSH: MinHash, banding, brute-force comparison.
+
 3-Graph: Louvain, Leiden, spectral clustering, community analysis.
+
 4-PCY: PCY and the A-priori comparison, rules for each community.
+
 5-Evaluation: permutation tests, the influence test, final figures; also edits the report.
