@@ -39,5 +39,32 @@ The `data/` folder is listed in `.gitignore`, so it will never be committed.
 
 5-Evaluation: permutation tests, the influence test, final figures; also edits the report.
 
+## Pipeline
+
+1. **Data cleaning & preprocessing**
+   - Filter to a single city.
+   - Keep users with ≥10 reviews.
+   - Keep the largest connected component of the friendship graph.
+   - Normalize star ratings per user (subtract user mean).
+
+2. **Friend communities**
+   - Build the user–user friendship graph.
+   - Detect communities with Louvain; evaluate with modularity.
+
+3. **Taste communities**
+   - Represent each user as the set of businesses (or categories) they reviewed.
+   - Use MinHash + LSH to find user pairs with high Jaccard similarity.
+   - Build a taste-similarity graph from those pairs and apply Louvain.
+   - (Optional) Compare with k-means on per-category rating vectors.
+
+4. **Comparison**
+   - Measure overlap between friend and taste partitions with NMI and ARI.
+   - Permutation test: check whether friends share tastes more than random user pairs.
+
+5. **Evaluation & conclusions**
+   - Report whether friend communities are also taste communities.
+   - Compare LSH parameters and community detection methods (Louvain vs. spectral).
+   - Discuss limitations (e.g., correlation vs. causation, data sparsity).
+
 ## Scope of the project
 We are aiming to know if _friend communities_ are also _taste communities_
