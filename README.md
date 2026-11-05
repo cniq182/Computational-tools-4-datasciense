@@ -38,3 +38,6 @@ The `data/` folder is listed in `.gitignore`, so it will never be committed.
 4-PCY: PCY and the A-priori comparison, rules for each community.
 
 5-Evaluation: permutation tests, the influence test, final figures; also edits the report.
+
+## Scope of the project
+We are aiming to know if _friend communities_ are also _taste communities_
