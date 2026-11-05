@@ -41,34 +41,34 @@ The `data/` folder is listed in `.gitignore`, so it will never be committed.
 
 ## Pipeline
 
-1. **Data cleaning & preprocessing**
+1. **Data cleaning & preprocessing** Together
    - Filter to a single city.
    - Keep users with ≥10 reviews.
    - Keep the largest connected component of the friendship graph.
    - Normalize star ratings per user (subtract user mean).
 
-2. **Friend communities**
+2. **Friend communities** Mattia
    - Build the user–user friendship graph.
    - Detect communities with Louvain; evaluate with modularity.
 
-3. **Taste communities**
+3. **Taste communities** Cesi
    - Represent each user as the set of businesses (or categories) they reviewed.
    - Use MinHash + LSH to find user pairs with high Jaccard similarity.
    - Build a taste-similarity graph from those pairs and apply Louvain.
    - (Optional) Compare with k-means on per-category rating vectors.
 
-4. **Frequent itemsets & association rules (PCY vs. A-priori)**
+4. **Frequent itemsets & association rules (PCY vs. A-priori)** Mariona and Viktor
    - Treat each user as a basket of the categories (or businesses) they rated positively.
    - Mine frequent itemsets with both A-priori and PCY.
    - Compare the two algorithms: runtime, memory use, and number of candidate pairs.
    - Extract association rules for each friend community and each taste community.
    - Compare rules across communities: do friend communities share the same rules as taste communities?
 
-5. **Comparison**
+5. **Comparison** Jose
    - Measure overlap between friend and taste partitions with NMI and ARI.
    - Permutation test: check whether friends share tastes more than random user pairs.
 
-6. **Evaluation & conclusions**
+6. **Evaluation & conclusions** Together
    - Report whether friend communities are also taste communities.
    - Compare LSH parameters and community detection methods (Louvain vs. spectral).
    - Discuss limitations (e.g., correlation vs. causation, data sparsity).
