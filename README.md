@@ -19,7 +19,14 @@ The dataset is **not included in this repository**. Yelp's dataset is approximat
    ```bash
    tar -xf yelp_dataset.tar
    ```
+  The three files correspond to the following original Yelp dataset files:
 
+   | Project filename | Original Yelp filename |
+   |---|---|
+   | `business.json` | `yelp_academic_dataset_business.json` |
+   | `review.json` | `yelp_academic_dataset_review.json` |
+   | `user.json` | `yelp_academic_dataset_user.json` |
+   
 3. Create the following folder structure in the root of the repository. Move the three required JSON files into `data/raw/`:
 
    ```text
@@ -34,13 +41,7 @@ The dataset is **not included in this repository**. Yelp's dataset is approximat
        └── 01_data_cleaning.ipynb
    ```
 
-   The three files correspond to the following original Yelp dataset files:
-
-   | Project filename | Original Yelp filename |
-   |---|---|
-   | `business.json` | `yelp_academic_dataset_business.json` |
-   | `review.json` | `yelp_academic_dataset_review.json` |
-   | `user.json` | `yelp_academic_dataset_user.json` |
+ 
 
 4. Install the required Python dependencies:
 
