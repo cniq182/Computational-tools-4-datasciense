@@ -77,28 +77,33 @@ The `data/` folder is listed in `.gitignore` and should never be committed to th
 
 ## Pipeline
 
-### 1. Data cleaning & preprocessing — Together
+### 1. Data cleaning & preprocessing — Together (`notebooks/01_data_cleaning.ipynb`)
 
-- Filter to a single city.
-- Keep users with ≥10 reviews.
-- Keep the largest connected component of the friendship graph.
-- Normalize star ratings per user (subtract user mean).
+- Filter to a single city: **Philadelphia, PA**, restaurants only (category "Restaurants").
+- Keep one review per (user, restaurant) (the most recent).
+- Keep users with ≥ 10 restaurant reviews.
+- Keep the largest connected component of the friendship graph → **7,947 users, 251,375 reviews, 5,759 restaurants, 67,622 friendships**.
+- Normalize star ratings per user (`stars_norm` = stars − user mean) and define "liked" as `is_positive` = stars ≥ 3.5 (4 or 5 stars).
+- Outputs: `data/processed/philadelphia_pa_*.parquet` and `cleaning_summary.json`.
 
-### 2. Friend communities — Mattia
+### 2. Friend communities — Mattia (`notebooks/02_friend_communities.ipynb`)
 
 - Build the user–user friendship graph.
-- Detect communities with Louvain; evaluate with modularity.
+- Detect communities with **Louvain implemented from scratch** (20 seeds, best-modularity run, fix for internally disconnected communities); evaluate with modularity against degree-preserving random graphs.
+- Analyse the communities, including their **period of activity** (a confounder for step 5).
+- Outputs: `data/processed/philadelphia_pa_friend_communities*.parquet`. Details: `STEP2_FRIEND_COMMUNITIES.md`.
 
-### 3. Taste communities — Cesi
+### 3. Taste communities — Cesia (`notebooks/03_taste_communities.ipynb`, `src/`)
 
-- Represent each user as the set of businesses (or categories) they reviewed.
-- Use MinHash + LSH to find user pairs with high Jaccard similarity.
-- Build a taste-similarity graph from those pairs and apply Louvain.
-- (Optional) Compare with k-means on per-category rating vectors.
+- Represent each user as the set of **restaurants** they liked and, separately, the set of **categories** of those restaurants (without generic categories, rare categories and multi-category venues).
+- Use **MinHash + LSH (implemented from scratch)** to find each user's 10 most similar users (Jaccard); compare with exact brute force (recall, runtime, choice of bands × rows).
+- Build a weighted taste-similarity graph (k-nearest neighbours, weight = Jaccard) and apply the same Louvain as step 2 (extended to edge weights).
+- Outputs: `data/results/taste_communities*.parquet`, `taste_edges_*.parquet`, `taste_summary.json`.
+- (Optional, not done) Compare with k-means on per-category rating vectors.
 
 ### 4. Frequent itemsets & association rules (PCY vs. A-priori) — Mariona and Viktor
 
-- Treat each user as a basket of the categories (or businesses) they rated positively.
+- Treat each user as a basket of the categories (or restaurants) they rated positively (`is_positive`, same definition as steps 1 and 3).
 - Mine frequent itemsets with both A-priori and PCY.
 - Compare the two algorithms: runtime, memory use, and number of candidate pairs.
 - Extract association rules for each friend community and each taste community.
@@ -106,17 +111,12 @@ The `data/` folder is listed in `.gitignore` and should never be committed to th
 
 ### 5. Comparison — Jose
 
-- Measure overlap between friend and taste partitions with NMI and ARI.
-- Permutation test: check whether friends share tastes more than random user pairs.
+- Measure overlap between friend and taste partitions with NMI and ARI, for the chosen runs **and** across the 20 saved runs of each.
+- Permutation test: check whether friends share tastes more than random user pairs, **controlling for the period of activity** (shuffle within the same period; `period` is in `taste_communities.parquet`).
+- Compare the restaurant-based and category-based taste partitions (restaurant overlap between friends may reflect going together or being active in the same years).
 
 ### 6. Evaluation & conclusions — Together
 
 - Report whether friend communities are also taste communities.
 - Compare LSH parameters and community detection methods (Louvain vs. spectral).
-- Discuss limitations (e.g., correlation vs. causation, data sparsity).
-
-## Scope of the project
-
-We aim to investigate whether *friend communities* are also *taste communities*.
-
-In other words, we want to understand whether users who are connected through Yelp's friendship network also tend to share similar preferences in businesses and categories.
+- Discuss limitations (e.g., correlation vs. causation, data sparsity, selection of active connected users, moderate stability of Louvain partitions).
