@@ -68,9 +68,9 @@ VNAME = {"category": "category taste", "business": "restaurant taste"}
 EXPECTED_REPORT = {
     "n_users": 7947,
     "friend_communities": 51,                              # chosen run, notebook 02
-    # chosen runs, notebook 03 (incl. isolated singletons). Restaurant: 19 = 13 + 6 isolated, as regenerated
-    # by notebook 03 in the team's current environment (the first committed run had 18; team decision: 19).
-    "taste_communities": {"category": 17, "business": 19},
+    # chosen runs, notebook 03 (incl. isolated singletons). Restaurant: 17 = 11 + 6 isolated, as regenerated
+    # by notebook 03 with the pinned requirements.txt (earlier unpinned runs gave 18 and 19).
+    "taste_communities": {"category": 17, "business": 17},
     "users_with_set": 7941,                                # notebook 03, section 5.1
     "n_items": {"category": 196, "business": 5414},        # notebook 03, section 5.1
 }
