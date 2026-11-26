@@ -1,122 +1,132 @@
-# Computational Tools for Data Science
+# Are friend communities also taste communities?
 
-## Dataset
+DTU 02807 Computational Tools for Data Science — project on the [Yelp Open Dataset](https://business.yelp.com/data/resources/open-dataset/).
 
-This project uses the [Yelp Open Dataset](https://www.yelp.com/dataset). The original dataset contains several JSON files. Only the three datasets needed for this project are used:
+The whole analysis is in one notebook, `notebooks/Computational_final.ipynb`. This README explains how to set the project up on your own computer and run it.
 
-- `business.json`
-- `review.json`
-- `user.json`
+## Requirements
 
-The dataset is **not included in this repository**. Yelp's dataset is approximately 4 GB, and its Terms of Use do not allow redistribution.
+- **Python 3.11** (the package versions in `requirements.txt` are pinned for it)
+- About **15 GB of free disk space**: ≈ 4 GB for the downloaded archive, ≈ 9 GB for the extracted files, plus the cached tables
+- **8 GB of RAM** is enough (the large files are streamed, never loaded whole)
+- Jupyter (JupyterLab, Jupyter Notebook or VS Code with the Jupyter extension)
 
-### Setup
+## Project structure
 
-1. Download the JSON version of the dataset from https://www.yelp.com/dataset. You must accept Yelp's Terms of Use.
+```text
+project/
+├── notebooks/
+│   └── Computational_final.ipynb   <- the full analysis (run this)
+├── src/                            <- Python modules used by the notebook
+├── tests/                          <- unit tests (pytest)
+├── data/                           <- NOT in git, you create it (see below)
+│   ├── raw/                        <- the 3 Yelp JSON files go here
+│   ├── processed/                  <- created by the notebook
+│   └── results/                    <- created by the notebook
+├── figures/                        <- created by the notebook
+├── requirements.txt
+└── README.md
+```
 
-2. Extract the downloaded `yelp_dataset.tar` archive:
+## 1. Get the code
+
+```bash
+git clone https://github.com/cniq182/Computational-tools-4-datasciense.git
+cd Computational-tools-4-datasciense
+```
+
+## 2. Create a Python environment and install the packages
+
+With `venv`:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+pip install jupyterlab ipykernel
+```
+
+or with conda:
+
+```bash
+conda create -n dtu02807 python=3.11
+conda activate dtu02807
+pip install -r requirements.txt
+pip install jupyterlab ipykernel
+```
+
+Install exactly the versions in `requirements.txt`. The community detection results depend on the library versions, and the notebook stops if they don't match the reference numbers (see *Troubleshooting*).
+
+## 3. Download the data
+
+The dataset is **not included in this repository**: it is too large for GitHub, and Yelp's Terms of Use do not allow redistributing it. Each team member downloads it separately.
+
+1. Go to <https://business.yelp.com/data/resources/open-dataset/>, accept the Terms of Use and download the **JSON** version (`yelp_dataset.tar`, ≈ 4 GB).
+2. Extract the archive:
 
    ```bash
    tar -xf yelp_dataset.tar
    ```
-  The three files correspond to the following original Yelp dataset files:
 
-   | Project filename | Original Yelp filename |
-   |---|---|
-   | `business.json` | `yelp_academic_dataset_business.json` |
-   | `review.json` | `yelp_academic_dataset_review.json` |
-   | `user.json` | `yelp_academic_dataset_user.json` |
-   
-3. Create the following folder structure in the root of the repository. Move the three required JSON files into `data/raw/`:
+3. Only **3 of the 5 files** are needed. **Keep their original names**:
 
-   ```text
-   project/
-   ├── data/
-   │   └── raw/
-   │       ├── business.json
-   │       ├── review.json
-   │       └── user.json
-   │
-   └── notebooks/
-       └── 01_data_cleaning.ipynb
-   ```
+   - `yelp_academic_dataset_business.json`
+   - `yelp_academic_dataset_review.json`
+   - `yelp_academic_dataset_user.json`
 
- 
+   The other files (`..._checkin.json`, `..._tip.json`) are not used and can be deleted.
 
-4. Install the required Python dependencies:
+## 4. Put the data in place
 
-   ```bash
-   pip install pandas numpy matplotlib seaborn jupyter
-   ```
+Create `data/raw/` in the root of the repository and move the 3 files into it:
 
-5. Start Jupyter Notebook from the project root:
-
-   ```bash
-   jupyter notebook
-   ```
-
-6. Open and run `notebooks/01_data_cleaning.ipynb`, executing the cells in order.
-
-**Important:** The notebook should reference the raw data files using paths relative to its location, for example:
-
-```python
-business_path = "../data/raw/business.json"
-review_path = "../data/raw/review.json"
-user_path = "../data/raw/user.json"
+```bash
+mkdir -p data/raw
+mv /path/to/yelp_academic_dataset_{business,review,user}.json data/raw/
 ```
 
-The `data/` folder is listed in `.gitignore` and should never be committed to the repository.
+```text
+data/
+└── raw/
+    ├── yelp_academic_dataset_business.json
+    ├── yelp_academic_dataset_review.json
+    └── yelp_academic_dataset_user.json
+```
 
-## Steps
+`data/processed/`, `data/results/` and `figures/` are created automatically on the first run.
 
-1. **Data:** Loading, cleaning, filtering, and exploration; owns the notebook.
-2. **LSH:** MinHash, banding, and brute-force comparison.
-3. **Graph:** Louvain, Leiden, spectral clustering, and community analysis.
-4. **PCY:** PCY and A-priori comparison, with rules for each community.
-5. **Evaluation:** Permutation tests, the influence test, and final figures; also edits the report.
+**Data stored somewhere else?** Instead of moving the files, point the environment variable `YELP_DATA_RAW` to the folder that contains them before starting Jupyter:
 
-## Pipeline
+```bash
+export YELP_DATA_RAW="/path/to/yelp_dataset"     # Windows (PowerShell): $env:YELP_DATA_RAW="C:\path\to\yelp_dataset"
+```
 
-### 1. Data cleaning & preprocessing — Together (`notebooks/01_data_cleaning.ipynb`)
+The `data/` folder is listed in `.gitignore`. **Never commit it.**
 
-- Filter to a single city: **Philadelphia, PA**, restaurants only (category "Restaurants").
-- Keep one review per (user, restaurant) (the most recent).
-- Keep users with ≥ 10 restaurant reviews.
-- Keep the largest connected component of the friendship graph → **7,947 users, 251,375 reviews, 5,759 restaurants, 67,622 friendships**.
-- Normalize star ratings per user (`stars_norm` = stars − user mean) and define "liked" as `is_positive` = stars ≥ 3.5 (4 or 5 stars).
-- Outputs: `data/processed/philadelphia_pa_*.parquet` and `cleaning_summary.json`.
+## 5. Run the notebook
 
-### 2. Friend communities — Mattia (`notebooks/02_friend_communities.ipynb`)
+```bash
+jupyter lab
+```
 
-- Build the user–user friendship graph.
-- Detect communities with **Louvain implemented from scratch** (20 seeds, best-modularity run, fix for internally disconnected communities); evaluate with modularity against degree-preserving random graphs.
-- Analyse the communities, including their **period of activity** (a confounder for step 5).
-- Outputs: `data/processed/philadelphia_pa_friend_communities*.parquet`. Details: `STEP2_FRIEND_COMMUNITIES.md`.
+Open `notebooks/Computational_final.ipynb`, select the kernel of the environment from step 2, and run all cells (*Run → Run All Cells*).
 
-### 3. Taste communities — Cesia (`notebooks/03_taste_communities.ipynb`, `src/`)
+- The first run takes about **10 minutes**. About 2 minutes of that is streaming the raw files, which are then cached in `data/processed/`.
+- Each section reads the files written by the sections before it, so after the setup cells (section 0) you can re-run a single section once its inputs exist.
 
-- Represent each user as the set of **restaurants** they liked and, separately, the set of **categories** of those restaurants (without generic categories, rare categories and multi-category venues).
-- Use **MinHash + LSH (implemented from scratch)** to find each user's 10 most similar users (Jaccard); compare with exact brute force (recall, runtime, choice of bands × rows).
-- Build a weighted taste-similarity graph (k-nearest neighbours, weight = Jaccard) and apply the same Louvain as step 2 (extended to edge weights).
-- Outputs: `data/results/taste_communities*.parquet`, `taste_edges_*.parquet`, `taste_summary.json`.
-- (Optional, not done) Compare with k-means on per-category rating vectors.
+## 6. Run the tests (optional)
 
-### 4. Frequent itemsets & association rules (PCY vs. A-priori) — Mariona and Viktor
+From the repository root:
 
-- Treat each user as a basket of the categories (or restaurants) they rated positively (`is_positive`, same definition as steps 1 and 3).
-- Mine frequent itemsets with both A-priori and PCY.
-- Compare the two algorithms: runtime, memory use, and number of candidate pairs.
-- Extract association rules for each friend community and each taste community.
-- Compare rules across communities: do friend communities share the same rules as taste communities?
+```bash
+pytest -q tests
+```
 
-### 5. Comparison — Jose
+## Troubleshooting
 
-- Measure overlap between friend and taste partitions with NMI and ARI, for the chosen runs **and** across the 20 saved runs of each.
-- Permutation test: check whether friends share tastes more than random user pairs, **controlling for the period of activity** (shuffle within the same period; `period` is in `taste_communities.parquet`).
-- Compare the restaurant-based and category-based taste partitions (restaurant overlap between friends may reflect going together or being active in the same years).
-
-### 6. Evaluation & conclusions — Together
-
-- Report whether friend communities are also taste communities.
-- Compare LSH parameters and community detection methods (Louvain vs. spectral).
-- Discuss limitations (e.g., correlation vs. causation, data sparsity, selection of active connected users, moderate stability of Louvain partitions).
+| Problem | Fix |
+|---|---|
+| `FileNotFoundError: Yelp JSON files not found` | The 3 files are not in `data/raw/` (or under the folder in `YELP_DATA_RAW`), or they were renamed. Keep the original `yelp_academic_dataset_*.json` names. |
+| `FileNotFoundError: Project root not found` | Open the notebook from inside the repository (root or `notebooks/`). |
+| `AssertionError: regenerated data differ from the report` | Your package versions differ from `requirements.txt`. Reinstall with `pip install -r requirements.txt` in a fresh environment and re-run the whole notebook. |
+| `ModuleNotFoundError` (e.g. `pytest`, `sklearn`) | The notebook kernel is not the environment from step 2. Select the right kernel, or install the requirements into the kernel's environment. |
