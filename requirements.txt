@@ -1,8 +1,11 @@
-numpy
-pandas
-scipy
-matplotlib
-networkx
-scikit-learn
-pyarrow
-pytest
+# Pinned so every team member regenerates the same results (Python 3.11).
+# Louvain and the k-nearest-neighbour taste graph are sensitive to library versions:
+# install exactly these with `pip install -r requirements.txt` in a fresh environment.
+numpy==2.3.2
+pandas==2.3.2
+scipy==1.16.1
+matplotlib==3.10.6
+networkx==3.5
+scikit-learn==1.7.2
+pyarrow==21.0.0
+pytest==9.2.0
