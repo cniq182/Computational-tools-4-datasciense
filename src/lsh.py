@@ -324,7 +324,7 @@ def brute_force_knn(X: sp.csr_matrix, k: int, min_jaccard: float = 0.0, chunk: i
         jac = inter / (sizes[s:s + chunk, None] + sizes[None, :] - inter)
         rows = np.arange(jac.shape[0])
         jac[rows, rows + s] = -1                                       # not your own neighbour
-        top = np.argpartition(-jac, k, axis=1)[:, :k]
+        top = np.argsort(-jac, axis=1, kind="stable")[:, :k]
         w = jac[rows[:, None], top]
         r, c = np.nonzero(w > min_jaccard)
         out.append(pd.DataFrame({"user": r + s, "neighbour": top[r, c], "jaccard": w[r, c]}))
